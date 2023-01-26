@@ -12,7 +12,7 @@ Various utilities for working with AWS in Python
 Installing the utilities via ```pip```
 
 ```
-pip install -i https://test.pypi.org/simple/ navalmartin_mir_aws_utils==0.0.2
+pip install -i https://test.pypi.org/simple/ navalmartin-mir-aws-utils==0.0.3
 ```
 
 Notice that the project is pulled from ```TestPyPi``` which does not have the same packages
@@ -22,7 +22,7 @@ to manually install the dependencies mentioned above.
 You can uninstall the project via
 
 ```commandline
-pip3 uninstall navalmartin_mir_aws_utils
+pip uninstall navalmartin_mir_aws_utils
 ```
 
 
