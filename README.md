@@ -12,7 +12,7 @@ Various utilities for working with AWS in Python
 Installing the utilities via ```pip```
 
 ```
-pip install -i https://test.pypi.org/simple/ navalmartin_mir_aws_utils==0.0.1
+pip install -i https://test.pypi.org/simple/ navalmartin_mir_aws_utils==0.0.2
 ```
 
 Notice that the project is pulled from ```TestPyPi``` which does not have the same packages
