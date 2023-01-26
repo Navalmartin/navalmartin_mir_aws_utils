@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling", "boto3"]
+build-backend = "hatchling.build"
+[project]
+name = "navalmartin_mir_aws_utils"
+version = "0.0.1"
+authors = [
+  { name="Alexandros Giavaras", email="a.giavaras@gmail.com" },
+]
+description = "Various utilities for working with AWS in Python 3. for the mir project"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+[project.urls]
+"Homepage" = "https://github.com/Navalmartin/navalmartin_mir_aws_utils"
+"Bug Tracker" = "https://github.com/Navalmartin/navalmartin_mir_aws_utils/issues"
