@@ -44,6 +44,9 @@ class ImagePathBatch(object):
                     self.images.append({'img': content.get('Key'),
                                         'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
 
+    def copy_to(self, s3_credentials_to: AWSCredentials_S3):
+        raise NotImplementedError("The function is not implemented")
+
     def __len__(self):
         return len(self.images)
 
