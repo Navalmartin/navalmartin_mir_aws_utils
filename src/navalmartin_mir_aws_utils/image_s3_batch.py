@@ -3,49 +3,18 @@ a batch of images on S3
 
 """
 import os
-from typing import List
+from typing import List, Any
 from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_S3
 from navalmartin_mir_aws_utils.boto3_client import get_aws_s3_client
+from navalmartin_mir_aws_utils.s3_utils import expand_s3_iterator_contents, expand_s3_iterator_common_prefixes
 
 
 class ImagePathBatch(object):
+
     def __init__(self, s3_credentials: AWSCredentials_S3):
         self.aws_bucket_credentials = s3_credentials
         self.images: List[dict] = []
         self._current_pos: int = -1
-
-    def read(self, image_prefixes: tuple, valid_image_extensions: tuple,
-             delimiter: str = '/'):
-
-        client = get_aws_s3_client(credentials=self.aws_bucket_credentials)
-
-        n_extensions = len(valid_image_extensions)
-
-        # get the object that lists the objects
-        # on S3
-        paginator = client.get_paginator('list_objects')
-
-        for prefix in image_prefixes:
-            s3_iterator = paginator.paginate(Bucket=self.aws_bucket_credentials.aws_s3_bucket_name,
-                                             Delimiter=delimiter,
-                                             Prefix=prefix)
-
-            for content in s3_iterator.search('Contents'):
-
-                image = content.get('Key')
-
-                if n_extensions != 0:
-
-                    img_extension = os.path.splitext(image)[1]
-                    if img_extension in valid_image_extensions:
-                        self.images.append({'img': content.get('Key'),
-                                            'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
-                else:
-                    self.images.append({'img': content.get('Key'),
-                                        'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
-
-    def copy_to(self, s3_credentials_to: AWSCredentials_S3):
-        raise NotImplementedError("The function is not implemented")
 
     def __len__(self):
         return len(self.images)
@@ -65,3 +34,107 @@ class ImagePathBatch(object):
         else:
             self._current_pos = -1
             raise StopIteration
+
+    def read(self, prefixes: tuple, valid_image_extensions: tuple,
+             delimiter: str = '/'):
+
+        client = get_aws_s3_client(credentials=self.aws_bucket_credentials)
+
+        # get the object that lists the objects
+        # on S3
+        paginator = client.get_paginator('list_objects')
+
+        for prefix in prefixes:
+            s3_iterator = paginator.paginate(Bucket=self.aws_bucket_credentials.aws_s3_bucket_name,
+                                             Delimiter=delimiter,
+                                             Prefix=prefix)
+
+            contents = expand_s3_iterator_contents(s3_iterator)
+
+            if len(contents) != 0:
+                self.read_from_contents(contents=contents,
+                                        valid_image_extensions=valid_image_extensions)
+
+            common_prefixes = expand_s3_iterator_common_prefixes(s3_iterator=s3_iterator)
+            if len(common_prefixes) != 0:
+                self.read_from_common_prefixes(common_prefixes=common_prefixes,
+                                               client=client,
+                                               delimiter=delimiter,
+                                               valid_image_extensions=valid_image_extensions)
+
+    def copy_to(self, s3_credentials_to: AWSCredentials_S3) -> None:
+        """Copy the images in the bucket to the S3 bucket specified
+        by the provided credentials
+
+        Parameters
+        ----------
+        s3_credentials_to: The credentials to use for the bucket to copy
+
+        Returns
+        -------
+
+        """
+
+        if len(self.images) == 0:
+            print("WARNING: Image batch is empty...")
+            return
+
+        raise NotImplementedError("The function is not implemented")
+
+
+
+    def read_from_contents(self, contents: List[dict], valid_image_extensions: tuple) -> None:
+        """Read the contents of the S3 bucket
+
+        Parameters
+        ----------
+        contents: The contents to use for reading the images
+        valid_image_extensions: The valid_image_extensions to look for
+
+        Returns
+        -------
+
+        """
+
+        n_extensions = len(valid_image_extensions)
+        for content in contents:
+
+            image = content.get('Key')
+
+            if n_extensions != 0:
+
+                img_extension = os.path.splitext(image)[1]
+                if img_extension in valid_image_extensions:
+                    self.images.append({'img': content.get('Key'),
+                                        'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
+            else:
+                self.images.append({'img': content.get('Key'),
+                                    'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
+
+    def read_from_common_prefixes(self, common_prefixes: List[dict], valid_image_extensions: tuple,
+                                  client: Any, delimiter: str = "/") -> None:
+        """Read from the common_prefixes
+
+        Parameters
+        ----------
+        common_prefixes: The common_prefixes to use for reading
+        valid_image_extensions: The valid_image_extensions to look for
+        client: The S3 client to use
+        delimiter: The delimiter
+
+        Returns
+        -------
+
+        """
+
+        paginator = client.get_paginator('list_objects')
+        for item in common_prefixes:
+            prefix = item['Prefix']
+
+            s3_iterator = paginator.paginate(Bucket=self.aws_bucket_credentials.aws_s3_bucket_name,
+                                             Delimiter=delimiter,
+                                             Prefix=prefix)
+
+            contents = expand_s3_iterator_contents(s3_iterator)
+            self.read_from_contents(contents=contents,
+                                    valid_image_extensions=valid_image_extensions)
