@@ -1,5 +1,5 @@
 import boto3
-from aws_credentials import AWSCredentials_S3, AWSCredentials_SQS
+from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_S3, AWSCredentials_SQS
 
 
 def get_aws_s3_client(credentials: AWSCredentials_S3):
