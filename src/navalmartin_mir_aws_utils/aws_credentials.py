@@ -7,9 +7,9 @@ from typing import Union
 
 
 class AWSCredentials(object):
-    def __init__(self, aws_client_name: Union[str | None] = None,
-                 aws_access_key: Union[str | None] = None,
-                 aws_secret_access_key: Union[str | None] = None):
+    def __init__(self, aws_client_name: str  = None,
+                 aws_access_key: str = None,
+                 aws_secret_access_key: str  = None):
 
         self.aws_client_name: str = aws_client_name
         self.aws_access_key: str = aws_access_key
