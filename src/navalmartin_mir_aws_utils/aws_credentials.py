@@ -3,7 +3,6 @@ credentials. This class is not used to load the
 credentials. It is the application's duty to do so
 
 """
-from typing import Union
 
 
 class AWSCredentials(object):
