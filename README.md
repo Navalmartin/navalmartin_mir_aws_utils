@@ -12,7 +12,7 @@ Various utilities for working with AWS in Python
 Installing the utilities via ```pip```
 
 ```
-pip install -i https://test.pypi.org/simple/ navalmartin-mir-aws-utils==0.0.7
+pip install -i https://test.pypi.org/simple/ navalmartin-mir-aws-utils==0.0.8
 ```
 
 Notice that the project is pulled from ```TestPyPi``` which does not have the same packages
@@ -79,14 +79,25 @@ if __name__ == '__main__':
                                              aws_access_key=AWS_ACCESS_KEY,
                                              aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
-    sqs_msg = SQSMessageConfig(message_body="Test AWS  SQS msg",
+    message = "task_id:123"
+    sqs_msg = SQSMessageConfig(message_body=message,
                                message_group_id=AWS_SQS_GROUP_ID,
-                               message_attributes=None)
+                               message_attributes=None,
+                               message_deduplication_id="123")
     
     response = send_sqs_message(sqs_credentials=aws_sqs_credentials,
                                 sqs_msg=sqs_msg)
 
     print(response)
+
+    read_response = read_one_sqs_message(aws_sqs_credentials)
+    print(read_response)
+
+    receipt_handle = read_response['Messages'][0]['ReceiptHandle']
+    # get the receipt handler to delete the message
+    # this signals that the message has been consumed
+    delete_response = delete_sqs_message(aws_sqs_credentials, receipt_handle=receipt_handle)
+    print(delete_response)
 ```
 
 
