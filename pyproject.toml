@@ -3,7 +3,7 @@ requires = ["hatchling", "boto3"]
 build-backend = "hatchling.build"
 [project]
 name = "navalmartin_mir_aws_utils"
-version = "0.0.7"
+version = "0.0.8"
 authors = [
   { name="Alexandros Giavaras", email="a.giavaras@gmail.com" },
 ]
