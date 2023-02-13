@@ -1,6 +1,7 @@
 # navalmartin_mir_aws_utils
 
-Various utilities for working with AWS in Python
+Various utilities for working with AWS in Python. The official
+PyPi package can be found <a href="https://pypi.org/project/navalmartin-mir-aws-utils/">here</a>.
 
 
 ## Dependencies
@@ -12,12 +13,14 @@ Various utilities for working with AWS in Python
 Installing the utilities via ```pip```
 
 ```
-pip install -i https://test.pypi.org/simple/ navalmartin-mir-aws-utils==0.0.8
+pip install navalmartin-mir-aws-utils
 ```
 
-Notice that the project is pulled from ```TestPyPi``` which does not have the same packages
-as the official PyPi index. This means that dependencies may fail to install. It is advised therefore
-to manually install the dependencies mentioned above.
+For a specific version you can use
+
+```
+pip install navalmartin-mir-aws-utils==x.x.x
+```
 
 You can uninstall the project via
 
