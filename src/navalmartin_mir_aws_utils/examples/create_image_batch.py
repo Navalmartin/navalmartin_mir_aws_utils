@@ -11,7 +11,7 @@ AWS_REGION = ""
 AWS_S3_BUCKET_NAME = ""
 AWS_ACCESS_KEY = ""
 AWS_SECRET_ACCESS_KEY = ""
-MONGO_DB_URL=""
+MONGO_DB_URL = ""
 
 if __name__ == '__main__':
     aws_s3_credentials = AWSCredentials_S3(aws_s3_bucket_name=AWS_S3_BUCKET_NAME,
