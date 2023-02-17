@@ -1,1 +1,5 @@
 boto3
+pydantic
+pydantic[email]
+hashlib
+hmac
