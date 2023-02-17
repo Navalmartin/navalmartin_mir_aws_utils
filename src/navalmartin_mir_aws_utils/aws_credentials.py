@@ -37,3 +37,17 @@ class AWSCredentials_SQS(AWSCredentials):
         self.queue_url: str = aws_queue_url
 
 
+class AWSCredentials_CognitoIDP(AWSCredentials):
+    def __init__(self, aws_region: str,
+                 aws_cognito_pool_id: str,
+                 aws_cognito_client_id: str,
+                 aws_cognito_client_secret: str,
+                 aws_access_key: str, aws_secret_access_key: str):
+        super(AWSCredentials_CognitoIDP, self).__init__(aws_client_name="cognito-idp",
+        aws_access_key=aws_access_key, aws_secret_access_key=aws_secret_access_key)
+        self.aws_region = aws_region
+        self.aws_cognito_pool_id = aws_cognito_pool_id
+        self.aws_cognito_client_id = aws_cognito_client_id
+        self.aws_cognito_client_secret = aws_cognito_client_secret
+
+
