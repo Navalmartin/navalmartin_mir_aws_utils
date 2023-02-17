@@ -1,5 +1,5 @@
 import boto3
-from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_S3, AWSCredentials_SQS
+from navalmartin_mir_aws_utils.aws_credentials import (AWSCredentials_S3, AWSCredentials_SQS, AWSCredentials_CognitoIDP)
 
 
 def get_aws_s3_client(credentials: AWSCredentials_S3):
@@ -32,6 +32,17 @@ def get_aws_sqs_client(credentials: AWSCredentials_SQS):
                         aws_access_key_id=credentials.aws_access_key,
                         aws_secret_access_key=credentials.aws_secret_access_key,
                         region_name=credentials.aws_region)
+
+
+def get_aws_cognito_idp_client(credentials: AWSCredentials_CognitoIDP):
+    """Get the Cognito IDP client for the given credentials
+
+    Parameters
+    ----------
+    credentials: Credentials for accessing the Cognito IDP service
+
+    """
+    return boto3.client("cognito-idp", credentials.aws_region)
 
 
 
