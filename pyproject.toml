@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "boto3", "pydantic", "pydantic[email]", "hashlib", "hmac"]
+requires = ["hatchling", "boto3", "pydantic", "pydantic[email]",]
 build-backend = "hatchling.build"
 [project]
 name = "navalmartin_mir_aws_utils"
