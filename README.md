@@ -7,6 +7,8 @@ PyPi package can be found <a href="https://pypi.org/project/navalmartin-mir-aws-
 ## Dependencies
 
 - boto3
+- pydantic
+- pydantic[email]
 
 ## Installation
 
@@ -25,7 +27,7 @@ pip install navalmartin-mir-aws-utils==x.x.x
 You can uninstall the project via
 
 ```
-pip uninstall navalmartin_mir_aws_utils
+pip uninstall navalmartin-mir-aws-utils
 ```
 
 ## How to use
