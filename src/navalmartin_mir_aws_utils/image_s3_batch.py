@@ -48,6 +48,27 @@ class ImagePathBatch(object):
         self.images = images
         self.delimiter = delimiter
 
+    def read_file_byte_string(self, key: Union[int, str]) -> str:
+        """Returns the byte string associated with the given key
+
+        Parameters
+        ----------
+        key: The key of the object to read
+
+        Returns
+        -------
+
+        The byte string of the object that is represented by the
+        given key
+
+        """
+        file_obj = self.get_object(key=key)
+
+        if 'Body' not in file_obj:
+            raise ValueError("Body is missing from file object response")
+
+        return file_obj['Body'].read()
+
     def read(self, prefixes: tuple, valid_image_extensions: tuple,
              delimiter: str = '/'):
 
