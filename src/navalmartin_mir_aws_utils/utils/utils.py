@@ -1,22 +1,25 @@
 import base64
 import hmac
 import hashlib
-from pydantic import BaseModel, Field, EmailStr
 
 
-class AWSCognitoSignUpUserData(BaseModel):
-    email: EmailStr = Field(title="email")
-    password: str = Field(title="password")
-    name: str = Field(title="name")
-    surname: str = Field(title="surname")
+def get_secret_hash(username: str, client_id: str,
+                    client_secret: str) -> str:
+    """Calculate a secret hash  for the given username on the
+    given client id
+    It uses the SHA256 algorithm
 
+    Parameters
+    ----------
+    username: The username
+    client_id: The client id
+    client_secret: The client secret
 
-class AWSCognitoSignInUserData(BaseModel):
-    username: EmailStr = Field(title="email")
-    password: str = Field(title="password")
+    Returns
+    -------
 
-
-def get_secret_hash(username: str, client_id: str, client_secret: str):
+    A string representing the hash
+    """
     msg = username + client_id
     dig = hmac.new(str(client_secret).encode("utf-8"),
                    msg=str(msg).encode("utf-8"),

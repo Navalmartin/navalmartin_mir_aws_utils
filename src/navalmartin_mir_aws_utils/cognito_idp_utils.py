@@ -6,7 +6,8 @@ from navalmartin_mir_aws_utils.utils import get_secret_hash
 
 
 def global_signout_user_from_pool(access_token: str,
-                                  credentials: AWSCredentials_CognitoIDP) -> Any:
+                                  credentials: AWSCredentials_CognitoIDP,
+                                  cognito_client: Any = None,) -> Any:
     """Signs out users from all devices. 
     It also invalidates all refresh tokens that Amazon Cognito 
     has issued to a user. A user can still use a hosted UI cookie to 
@@ -14,18 +15,23 @@ def global_signout_user_from_pool(access_token: str,
 
     Parameters
     ----------
+    cognito_client: The cognito client to use
     access_token: The access token that corresponds to the signed in  user
     credentials: Credentials for accessing the Cognito IDP service
     
     """
 
-    client = get_aws_cognito_idp_client(credentials=credentials)
-    return client.global_sign_out(AccessToken=access_token)
+    if cognito_client is None:
+        cognito_client = get_aws_cognito_idp_client(credentials=credentials)
+
+    return cognito_client.global_sign_out(AccessToken=access_token)
 
 
 def signup_cognito_user(user_data: AWSCognitoSignUpUserData,
                         aws_cognito_credentials: AWSCredentials_CognitoIDP,
-                        secret_hash_builder: Callable, print_exception_info: bool = False) -> Any:
+                        secret_hash_builder: Callable,
+                        cognito_client: Any = None,
+                        print_exception_info: bool = False) -> Any:
     """Signup the user on the AWS Cognito
 
      Parameters
@@ -38,7 +44,6 @@ def signup_cognito_user(user_data: AWSCognitoSignUpUserData,
     """
     try:
 
-        aws_region_name = aws_cognito_credentials.aws_region
         aws_cognito_user_client_id = aws_cognito_credentials.aws_cognito_pool_id
         aws_cognito_client_secret = aws_cognito_credentials.aws_cognito_client_secret
 
@@ -46,9 +51,10 @@ def signup_cognito_user(user_data: AWSCognitoSignUpUserData,
                                           aws_cognito_user_client_id,
                                           aws_cognito_client_secret)
 
-        boto3_client = get_aws_cognito_idp_client(credentials=aws_cognito_credentials)
+        if cognito_client is None:
+            cognito_client = get_aws_cognito_idp_client(credentials=aws_cognito_credentials)
 
-        cognito_resp = boto3_client.sign_up(
+        cognito_resp = cognito_client.sign_up(
             ClientId=aws_cognito_user_client_id,
             SecretHash=secret_hash,
             Username=user_data.email,
@@ -60,7 +66,7 @@ def signup_cognito_user(user_data: AWSCognitoSignUpUserData,
         )
         return cognito_resp, secret_hash
     except Exception as e:
-        print("Signup AWS Cognito failed with")
+        print("Signup AWS Cognito failed")
 
         if print_exception_info:
             print(f"AWS Region name {aws_cognito_credentials.aws_region}")
@@ -71,14 +77,17 @@ def signup_cognito_user(user_data: AWSCognitoSignUpUserData,
 
 
 def authenticate_and_get_token_for_user(user_data: AWSCognitoSignInUserData,
-                                        aws_cognito_credentials: AWSCredentials_CognitoIDP) -> Any:
-    client = get_aws_cognito_idp_client(credentials=aws_cognito_credentials)
+                                        aws_cognito_credentials: AWSCredentials_CognitoIDP,
+                                        cognito_client: Any = None) -> Any:
+
+    if cognito_client is None:
+        cognito_client = get_aws_cognito_idp_client(credentials=aws_cognito_credentials)
 
     secret_hash = get_secret_hash(username=user_data.username,
                                   client_id=aws_cognito_credentials.aws_cognito_client_id,
                                   client_secret=aws_cognito_credentials.aws_cognito_client_secret)
 
-    resp = client.initiate_auth(
+    resp = cognito_client.initiate_auth(
         ClientId=aws_cognito_credentials.aws_cognito_client_id,
         AuthFlow="USER_PASSWORD_AUTH",
         AuthParameters={
