@@ -2,6 +2,7 @@
 
 Various utilities for working with AWS in Python. The official
 PyPi package can be found <a href="https://pypi.org/project/navalmartin-mir-aws-utils/">here</a>.
+This package is basically wrappers on top of boto3 that allows for easier development with AWS.
 
 
 ## Dependencies
@@ -32,10 +33,13 @@ pip uninstall navalmartin-mir-aws-utils
 
 ## How to use
 
+Below are several examples of using the provided utilities. In general, for the examples to
+work you need to install AWS CLI and configure it with your credentials.
+
 ### Signup/signout AWS Cognito
 
 ```
-from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_CognitoIDP
+from navalmartin_mir_aws_utils import AWSCredentials_CognitoIDP
 from navalmartin_mir_aws_utils.cognito_idp_utils import (global_signout_user_from_pool,
                                                          authenticate_and_get_token_for_user)
 from navalmartin_mir_aws_utils.utils import AWSCognitoSignInUserData
@@ -170,6 +174,33 @@ if __name__ == '__main__':
     delete_response = delete_sqs_message(aws_sqs_credentials, receipt_handle=receipt_handle)
     print(delete_response)
 ```
+
+
+### Usign SecretsManager
+
+Belowe the required credentials are accessed via what you have entered when you configured AWS CLI
+on your machine.
+
+```
+from botocore.exceptions import ClientError
+from navalmartin_mir_aws_utils import get_aws_client_factory, AWSCredentials_SecretsManager
+
+AWS_SECRET_NAME = "YOUR-AWS-Secrets-Manager"
+AWS_REGION = "YOUR-AWS-REGION"
+
+if __name__ == '__main__':
+
+    try:
+        credentials = AWSCredentials_SecretsManager(aws_region=AWS_REGION,
+                                                    secret_name=AWS_SECRET_NAME)
+        client = get_aws_client_factory(credentials=credentials)
+
+        get_secret_value_response = client.get_secret_value(SecretId=credentials.secret_name)
+        print(get_secret_value_response)
+    except ClientError as e:
+        print(str(e))
+```
+
 
 
 
