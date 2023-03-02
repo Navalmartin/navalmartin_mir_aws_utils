@@ -36,6 +36,13 @@ pip uninstall navalmartin-mir-aws-utils
 Below are several examples of using the provided utilities. In general, for the examples to
 work you need to install AWS CLI and configure it with your credentials.
 
+You can check which specific version you have installed by
+
+```
+import navalmartin_mir_aws_utils
+print(navalmartin_mir_aws_utils.__version__)
+```
+
 ### Signup/signout AWS Cognito
 
 ```
@@ -176,7 +183,7 @@ if __name__ == '__main__':
 ```
 
 
-### Usign SecretsManager
+### Using SecretsManager
 
 Belowe the required credentials are accessed via what you have entered when you configured AWS CLI
 on your machine.
@@ -199,6 +206,16 @@ if __name__ == '__main__':
         print(get_secret_value_response)
     except ClientError as e:
         print(str(e))
+```
+
+### Using SES
+
+SES is a simple email service that we  can use to send marketing emails such as special offers, 
+transactional emails such as order confirmations, and other types of correspondence such as newsletters. 
+You can find more details <a herf="https://docs.aws.amazon.com/ses/latest/dg/Welcome.html">here</a>
+
+```commandline
+
 ```
 
 
