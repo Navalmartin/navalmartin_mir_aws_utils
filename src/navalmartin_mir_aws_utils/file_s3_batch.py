@@ -9,12 +9,12 @@ from navalmartin_mir_aws_utils.boto3_client import get_aws_s3_client
 from navalmartin_mir_aws_utils.s3_utils import expand_s3_iterator_contents, expand_s3_iterator_common_prefixes
 
 
-class ImagePathBatch(object):
+class FilePathBatch(object):
 
     def __init__(self, s3_credentials: AWSCredentials_S3, delimiter: str = '/',
                  do_build_client: bool = True):
         self.aws_bucket_credentials = s3_credentials
-        self.images: List[dict] = []
+        self.files: List[Any] = []
         self.delimiter = delimiter
         self._current_pos: int = -1
         self._client: Any = None
@@ -23,18 +23,18 @@ class ImagePathBatch(object):
             self.build_client()
 
     def __len__(self):
-        return len(self.images)
+        return len(self.files)
 
     def __iter__(self):
         self._current_pos = 0
         return self
 
     def __next__(self):
-        if len(self.images) == 0:
+        if len(self.files) == 0:
             raise StopIteration
 
-        if self._current_pos < len(self.images):
-            result = self.images[self._current_pos]
+        if self._current_pos < len(self.files):
+            result = self.files[self._current_pos]
             self._current_pos += 1
             return result
         else:
@@ -55,27 +55,33 @@ class ImagePathBatch(object):
         """
         if type(key) == int:
 
-            if key >= len(self.images):
-                raise ValueError(f"Invalid key. Integer key {key} cannot be >= {len(self.images)}")
+            if key >= len(self.files):
+                raise ValueError(f"Invalid key. Integer key {key} cannot be >= {len(self.files)}")
 
-            key = self.images[key]
+            key = self.files[key]
             return key
         elif type(key) == str:
-            if key not in self.images:
-                raise ValueError(f"key={key} not in {self.images}")
+            if key not in self.files:
+                raise ValueError(f"key={key} not in {self.files}")
             return key
         else:
             raise ValueError(f"key type {type(key)} is not valid")
 
     def build_client(self) -> Any:
+        """Build an S3 client from the given AWS S3 credentials
+
+        Returns
+        -------
+
+        """
         self._client = get_aws_s3_client(credentials=self.aws_bucket_credentials)
 
-    def load_from_list(self, images: List[str], delimiter="/"):
-        self.images = images
+    def load_from_list(self, files: List[str], delimiter="/"):
+        self.files = files
         self.delimiter = delimiter
 
     def read_file_byte_string(self, key: Union[int, str],
-                              read_from_local_host: bool=False,
+                              read_from_local_host: bool = False,
                               file_reader: Callable = None) -> str:
         """Returns the byte string associated with the given key
 
@@ -142,7 +148,7 @@ class ImagePathBatch(object):
 
         """
 
-        if len(self.images) == 0:
+        if len(self.files) == 0:
             print("WARNING: Image batch is empty...")
             return
 
@@ -162,13 +168,13 @@ class ImagePathBatch(object):
 
         if type(key) == int:
 
-            if key >= len(self.images):
-                raise ValueError(f"Invalid key. Integer key {key} cannot be >= {len(self.images)}")
+            if key >= len(self.files):
+                raise ValueError(f"Invalid key. Integer key {key} cannot be >= {len(self.files)}")
 
-            key = self.images[key]
+            key = self.files[key]
         elif type(key) == str:
-            if key not in self.images:
-                raise ValueError(f"key={key} not in {self.images}")
+            if key not in self.files:
+                raise ValueError(f"key={key} not in {self.files}")
         else:
             raise ValueError(f"key type {type(key)} is not valid")
 
@@ -202,11 +208,11 @@ class ImagePathBatch(object):
 
                 img_extension = os.path.splitext(image)[1]
                 if img_extension in valid_image_extensions:
-                    self.images.append({'img': content.get('Key'),
-                                        'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
+                    self.files.append({'img': content.get('Key'),
+                                       'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
             else:
-                self.images.append({'img': content.get('Key'),
-                                    'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
+                self.files.append({'img': content.get('Key'),
+                                   'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
 
     def read_from_common_prefixes(self, common_prefixes: List[dict],
                                   valid_image_extensions: tuple) -> None:
