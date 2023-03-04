@@ -3,7 +3,7 @@ a batch of images on S3
 
 """
 import os
-from typing import List, Any, Union
+from typing import List, Any, Union, Callable
 from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_S3
 from navalmartin_mir_aws_utils.boto3_client import get_aws_s3_client
 from navalmartin_mir_aws_utils.s3_utils import expand_s3_iterator_contents, expand_s3_iterator_common_prefixes
@@ -41,6 +41,32 @@ class ImagePathBatch(object):
             self._current_pos = -1
             raise StopIteration
 
+    def __getitem__(self, key: Union[int, str]) -> str:
+        """Returns the image that corresponds to the given key
+
+        Parameters
+        ----------
+        key
+
+        Returns
+        -------
+
+        A string representing the image in the batch
+        """
+        if type(key) == int:
+
+            if key >= len(self.images):
+                raise ValueError(f"Invalid key. Integer key {key} cannot be >= {len(self.images)}")
+
+            key = self.images[key]
+            return key
+        elif type(key) == str:
+            if key not in self.images:
+                raise ValueError(f"key={key} not in {self.images}")
+            return key
+        else:
+            raise ValueError(f"key type {type(key)} is not valid")
+
     def build_client(self) -> Any:
         self._client = get_aws_s3_client(credentials=self.aws_bucket_credentials)
 
@@ -48,11 +74,15 @@ class ImagePathBatch(object):
         self.images = images
         self.delimiter = delimiter
 
-    def read_file_byte_string(self, key: Union[int, str]) -> str:
+    def read_file_byte_string(self, key: Union[int, str],
+                              read_from_local_host: bool=False,
+                              file_reader: Callable = None) -> str:
         """Returns the byte string associated with the given key
 
         Parameters
         ----------
+        file_reader
+        read_from_local_host
         key: The key of the object to read
 
         Returns
@@ -62,6 +92,11 @@ class ImagePathBatch(object):
         given key
 
         """
+
+        if read_from_local_host:
+            image = self[key]
+            return file_reader(image)
+
         file_obj = self.get_object(key=key)
 
         if 'Body' not in file_obj:
@@ -135,7 +170,7 @@ class ImagePathBatch(object):
             if key not in self.images:
                 raise ValueError(f"key={key} not in {self.images}")
         else:
-            raise ValueError(f"key type {type(key)} is not valie")
+            raise ValueError(f"key type {type(key)} is not valid")
 
         if self._client is None:
             raise ValueError("S3 client is not built")
