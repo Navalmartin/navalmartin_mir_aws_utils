@@ -26,15 +26,15 @@ def get_secrets(credentials: AWSCredentials_SecretsManager) -> dict:
 
 
 async def validate_sqs_event_record(event: dict,
-                                    db_writer: Callable = None,
-                                    db_writer_input: dict = None) -> Union[Dict, str]:
+                                    context: Any,
+                                    db_writer: Callable = None) -> Union[Dict, str]:
     """Validate the event and write in the DB that monitors the errors
 
     Parameters
     ----------
-    event: The event to validate
+    event: The event the lambda was called to validate
     db_writer: The writer to write in the DB
-    db_writer_input: The input to the db writer
+    context: The context the lambda was called
 
     Returns
     -------
@@ -44,14 +44,24 @@ async def validate_sqs_event_record(event: dict,
         print(f"No 'Records' was provided in the given event. Finishing task...")
 
         if db_writer is not None:
-            await db_writer(db_writer_input)
+            await db_writer(error_type="GENERAL_SQS_MESSAGE_ERROR",
+                            error_msg="No 'Records' was provided in the given event",
+                            task_id=context.function_name,
+                            lambda_arn=context.invoked_function_arn,
+                            lambda_request_id=context.aws_request_id,
+                            event=event)
         return get_error_return(error=f"No 'Records' was provided in the given event.")
     else:
 
         if len(event['Records']) == 0:
             print(f"'Records' attribute is empty in the provided event. Finishing task...")
             if db_writer is not None:
-                await db_writer(db_writer_input)
+                await db_writer(error_type="GENERAL_SQS_MESSAGE_ERROR",
+                                error_msg="'Records' attribute is empty in the provided event.",
+                                task_id=context.function_name,
+                                lambda_arn=context.invoked_function_arn,
+                                lambda_request_id=context.aws_request_id,
+                                event=event)
             return get_error_return(error=f"'Records' attribute is "
                                           f"empty in the provided event.")
 
@@ -60,7 +70,13 @@ async def validate_sqs_event_record(event: dict,
                   f"in the provided event. Finishing task...")
 
             if db_writer is not None:
-                await db_writer(db_writer_input)
+                await db_writer(error_type="GENERAL_SQS_MESSAGE_ERROR",
+                                error_msg="'Records' attribute does not have 'body' "
+                                          "attribute in the provided event.",
+                                task_id=context.function_name,
+                                lambda_arn=context.invoked_function_arn,
+                                lambda_request_id=context.aws_request_id,
+                                event=event)
 
             return get_error_return(error=f"'Records' attribute does not "
                                           f"have 'body' attribute in the provided event.")
@@ -69,7 +85,13 @@ async def validate_sqs_event_record(event: dict,
             print(f"'Records' attribute does not have 'receiptHandle' "
                   f"attribute in the provided event.")
             if db_writer is not None:
-                await db_writer(db_writer_input)
+                await db_writer(error_type="GENERAL_SQS_MESSAGE_ERROR",
+                                error_msg="'Records' attribute does not have 'receiptHandle' "
+                                                           "attribute in the provided event.",
+                                task_id=context.function_name,
+                                lambda_arn=context.invoked_function_arn,
+                                lambda_request_id=context.aws_request_id,
+                                event=event)
             return get_error_return(error=f"'Records' attribute does not have 'receiptHandle' "
                                           f"attribute in the provided event.")
 
