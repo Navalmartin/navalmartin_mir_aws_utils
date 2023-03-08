@@ -1,1 +1,2 @@
 from .tasks_lambdas_utils import get_error_return, get_success_return, get_secrets
+from .aws_tasks_decorator import aws_lambda_task_decorator
