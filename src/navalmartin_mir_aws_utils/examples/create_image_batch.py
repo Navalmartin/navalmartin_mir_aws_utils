@@ -2,11 +2,11 @@ from pathlib import Path
 from navalmartin_mir_aws_utils import FilePathBatch
 from navalmartin_mir_aws_utils import AWSCredentials_S3
 
-AWS_S3_REGION = "eu-west-2"
-AWS_S3_BUCKET_NAME = "mir-webapp-surveys"
+AWS_S3_REGION = ""
+AWS_S3_BUCKET_NAME = ""
 IMAGE_STR_TYPES = ('.jpg', '.png', '.jpeg')
-AWS_S3_REGION_TO = "eu-west-2"
-AWS_S3_BUCKET_NAME_TO = "mir-dl-imgs-stage"
+AWS_S3_REGION_TO = ""
+AWS_S3_BUCKET_NAME_TO = ""
 
 
 def read_pil_image_to_byte_string(image_path: Path):
