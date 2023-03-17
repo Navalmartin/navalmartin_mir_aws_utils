@@ -8,6 +8,7 @@ from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_S3
 from navalmartin_mir_aws_utils.boto3_client import get_aws_s3_client
 from navalmartin_mir_aws_utils.s3_utils import expand_s3_iterator_contents, expand_s3_iterator_common_prefixes
 
+S3_URI = "s3://"
 
 class FilePathBatch(object):
 
@@ -67,6 +68,31 @@ class FilePathBatch(object):
         else:
             raise ValueError(f"key type {type(key)} is not valid")
 
+    def reinit(self, s3_credentials: AWSCredentials_S3, delimiter: str = '/',
+               do_build_client: bool = True):
+        """Set the file batch to the state just after the constructor
+        was called
+
+        Parameters
+        ----------
+        s3_credentials
+        delimiter
+        do_build_client
+
+        Returns
+        -------
+
+        """
+
+        self.aws_bucket_credentials = s3_credentials
+        self.files: List[Any] = []
+        self.delimiter = delimiter
+        self._current_pos: int = -1
+        self._client: Any = None
+
+        if do_build_client:
+            self.build_client()
+
     def build_client(self) -> Any:
         """Build an S3 client from the given AWS S3 credentials
 
@@ -115,6 +141,12 @@ class FilePathBatch(object):
 
         self.delimiter = delimiter
 
+        # empty the files as we will read new ones
+        self.files = []
+
+        if self._client is None:
+            self.build_client()
+
         # get the object that lists the objects
         # on S3
         paginator = self._client.get_paginator('list_objects')
@@ -153,6 +185,39 @@ class FilePathBatch(object):
             return
 
         raise NotImplementedError("The function is not implemented")
+
+    def copy_file_to(self, key: Union[int, str],
+                     s3_credentials_to: AWSCredentials_S3,
+                     new_filename: str = "",
+                     **kwargs) -> dict:
+        """Copies the specified file identified by the given key
+        into the bucket specified in the given AWSCredentials_S3 credentials
+
+        Parameters
+        ----------
+        key: The index of the file to copy to
+        s3_credentials_to: Credentials for accessing the new bucket
+        kwargs: Arguments to orchestrate how the copy is done
+
+        Returns
+        -------
+
+        """
+
+        item_to_copy = self[key]
+
+        if new_filename == "":
+            new_filename = item_to_copy
+
+        if self._client is None:
+            self.build_client()
+
+        copy_source = self.aws_bucket_credentials.aws_s3_bucket_name + "/" + item_to_copy
+        copy_response = self._client.copy_object(Bucket=s3_credentials_to.aws_s3_bucket_name,
+                                                 Key=new_filename,
+                                                 CopySource=copy_source,
+                                                 **kwargs)
+        return copy_response
 
     def get_object(self, key: Union[int, str]) -> Any:
         """Returns the object specified with the given key.
@@ -208,11 +273,9 @@ class FilePathBatch(object):
 
                 img_extension = os.path.splitext(image)[1]
                 if img_extension in valid_image_extensions:
-                    self.files.append({'img': content.get('Key'),
-                                       'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
+                    self.files.append(content.get('Key'))
             else:
-                self.files.append({'img': content.get('Key'),
-                                   'bucket': self.aws_bucket_credentials.aws_s3_bucket_name})
+                self.files.append(content.get('Key'))
 
     def read_from_common_prefixes(self, common_prefixes: List[dict],
                                   valid_image_extensions: tuple) -> None:

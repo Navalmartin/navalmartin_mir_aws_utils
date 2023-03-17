@@ -2,11 +2,11 @@ from pathlib import Path
 from navalmartin_mir_aws_utils import FilePathBatch
 from navalmartin_mir_aws_utils import AWSCredentials_S3
 
-AWS_REGION = "YOUR_AWS_REGION"
-AWS_S3_BUCKET_NAME = "YOUR_AWS_S3_BUCKET_NAME"
-AWS_ACCESS_KEY = "YOUR_AWS_ACCESS_KEY"
-AWS_SECRET_ACCESS_KEY = "YOUR_AWS_SECRET_ACCESS_KEY"
+AWS_S3_REGION = "eu-west-2"
+AWS_S3_BUCKET_NAME = "mir-webapp-surveys"
 IMAGE_STR_TYPES = ('.jpg', '.png', '.jpeg')
+AWS_S3_REGION_TO = "eu-west-2"
+AWS_S3_BUCKET_NAME_TO = "mir-dl-imgs-stage"
 
 
 def read_pil_image_to_byte_string(image_path: Path):
@@ -32,9 +32,7 @@ def read_pil_image_to_byte_string(image_path: Path):
 
 if __name__ == '__main__':
     aws_s3_credentials = AWSCredentials_S3(aws_s3_bucket_name=AWS_S3_BUCKET_NAME,
-                                           aws_region=AWS_REGION,
-                                           aws_access_key=AWS_ACCESS_KEY,
-                                           aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+                                           aws_region=AWS_S3_REGION)
 
     image_batch = FilePathBatch(s3_credentials=aws_s3_credentials,
                                 do_build_client=False)
@@ -61,11 +59,38 @@ if __name__ == '__main__':
                                                    file_reader=read_pil_image_to_byte_string)
 
     # read the images
-    file_prefix = "YOUR-PREFIX"
+    file_prefix = "6411b6f2a656f521ed52e6cd/0/"
     image_batch.read(prefixes=(file_prefix,),
                      valid_image_extensions=IMAGE_STR_TYPES,
                      delimiter='/')
 
     for image_file in image_batch:
         print(image_file)
+
+    # copy image batch from one bucket
+    # to another
+    image_batch.reinit(s3_credentials=aws_s3_credentials,
+                       delimiter="/",
+                       do_build_client=True)
+
+    image_batch.read(prefixes=("6411b6f2a656f521ed52e6cd/0/64120f5a8a32794f722abdb9.jpg",),
+                     valid_image_extensions=IMAGE_STR_TYPES)
+
+    aws_s3_credentials_to = AWSCredentials_S3(aws_s3_bucket_name=AWS_S3_BUCKET_NAME_TO,
+                                              aws_region=AWS_S3_REGION_TO)
+
+    print(f"Copy file batch to: {aws_s3_credentials_to.aws_s3_bucket_name}")
+    kwargs = {}
+    copy_response = image_batch.copy_file_to(key=0, s3_credentials_to=aws_s3_credentials_to,
+                                             **kwargs)
+    print(copy_response)
+
+    etag = copy_response['CopyObjectResult']['ETag']
+
+    # try to copy if the Etag does not exist
+    # this will fail
+    kwargs = {'CopySourceIfNoneMatch': etag}
+    copy_response = image_batch.copy_file_to(key=0,
+                                             s3_credentials_to=aws_s3_credentials_to,
+                                             **kwargs)
 
