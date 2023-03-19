@@ -74,3 +74,16 @@ class AWSCredentials_SES(AWSCredentials):
                                                  aws_access_key=aws_access_key,
                                                  aws_secret_access_key=aws_secret_access_key)
         self.aws_region = aws_region
+
+
+class AWSCredentials_SFN(AWSCredentials):
+    def __init__(self, state_machine_arn: str,
+                 aws_region: str,
+                 aws_access_key: str = None,
+                 aws_secret_access_key: str = None):
+        super(AWSCredentials_SFN, self).__init__(aws_client_name="sfn",
+                                                 aws_access_key=aws_access_key,
+                                                 aws_secret_access_key=aws_secret_access_key)
+
+        self.aws_region = aws_region
+        self.state_machine_arn = state_machine_arn
