@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, ByteString
 from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_S3
 from navalmartin_mir_aws_utils.boto3_client import get_aws_s3_client
 
@@ -101,5 +101,37 @@ def delete_s3_object_with_key(key: str, s3_client: Any,
     else:
         response = s3_client.delete_object(Bucket=aws_creds.aws_s3_bucket_name,
                                            Key=key)
+
+    return response
+
+
+def save_object_to_s3(body: ByteString,
+                      key: str, s3_client: Any,
+                      aws_creds: AWSCredentials_S3) -> dict:
+    """
+    Save object to designated S3 bucket
+    Parameters
+    ----------
+    body: The object in BytesString
+    key: The prefix of the object
+    s3_client: The S3 client the objects sit on
+    aws_creds: The aws credentials to use
+
+    Returns
+    -------
+    A dictionary with the response
+    """
+    if key is None or key == "":
+        raise ValueError("Invalid key given")
+
+    if aws_creds is None:
+        raise ValueError("AWS credentials not given")
+
+    if s3_client is None:
+        s3_client = get_aws_s3_client(credentials=aws_creds)
+
+    response = s3_client.put_object(
+            Body=body, Bucket=aws_creds.aws_s3_bucket_name, Key=key
+        )
 
     return response
