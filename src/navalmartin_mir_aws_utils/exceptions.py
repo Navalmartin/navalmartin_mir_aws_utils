@@ -16,3 +16,11 @@ class PdfCreationException(Exception):
     def __str__(self):
         return self.message
 
+
+class S3UploadException(Exception):
+    def __init__(self, bucket_name: str, object_id: str):
+        self.message = f"An exception occurred while trying to upload object {object_id} " \
+                       f"to S3 bucket {bucket_name}."
+
+    def __str__(self):
+        return self.message
