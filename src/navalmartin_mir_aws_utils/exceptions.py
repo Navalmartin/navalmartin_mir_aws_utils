@@ -11,7 +11,9 @@ class InvalidAWSClientException(Exception):
 
 class PdfCreationException(Exception):
     def __init__(self, survey_id: str):
-        self.message = f"An exception occurred while creating pdf for survey {survey_id}."
+        self.message = (
+            f"An exception occurred while creating pdf for survey {survey_id}."
+        )
 
     def __str__(self):
         return self.message
@@ -19,8 +21,10 @@ class PdfCreationException(Exception):
 
 class S3UploadException(Exception):
     def __init__(self, bucket_name: str, object_id: str):
-        self.message = f"An exception occurred while trying to upload object {object_id} " \
-                       f"to S3 bucket {bucket_name}."
+        self.message = (
+            f"An exception occurred while trying to upload object {object_id} "
+            f"to S3 bucket {bucket_name}."
+        )
 
     def __str__(self):
         return self.message

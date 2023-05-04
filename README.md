@@ -1,3 +1,4 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # navalmartin_mir_aws_utils
 
 Various utilities for working with AWS in Python. The official
@@ -211,7 +212,7 @@ if __name__ == '__main__':
                                message_group_id=AWS_SQS_GROUP_ID,
                                message_attributes=None,
                                message_deduplication_id="123")
-    
+
     response = send_sqs_message(sqs_credentials=aws_sqs_credentials,
                                 sqs_msg=sqs_msg)
 
@@ -255,8 +256,8 @@ if __name__ == '__main__':
 
 ### Using SES
 
-SES is a simple email service that we  can use to send marketing emails such as special offers, 
-transactional emails such as order confirmations, and other types of correspondence such as newsletters. 
+SES is a simple email service that we  can use to send marketing emails such as special offers,
+transactional emails such as order confirmations, and other types of correspondence such as newsletters.
 You can find more details <a herf="https://docs.aws.amazon.com/ses/latest/dg/Welcome.html">here</a>.
 
 ```
@@ -283,8 +284,3 @@ if __name__ == '__main__':
 Note that for the code above to work, you need to have a registered email address with AWS. Also,
 the email you have registered will be initially in a sandbox therefore you won't be able to actually
 send emails to others unless the destination email is also a verified email with AWS.
-
-
-
-
-

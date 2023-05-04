@@ -3,8 +3,7 @@ import hmac
 import hashlib
 
 
-def get_secret_hash(username: str, client_id: str,
-                    client_secret: str) -> str:
+def get_secret_hash(username: str, client_id: str, client_secret: str) -> str:
     """Calculate a secret hash  for the given username on the
     given client id
     It uses the SHA256 algorithm
@@ -21,8 +20,10 @@ def get_secret_hash(username: str, client_id: str,
     A string representing the hash
     """
     msg = username + client_id
-    dig = hmac.new(str(client_secret).encode("utf-8"),
-                   msg=str(msg).encode("utf-8"),
-                   digestmod=hashlib.sha256, ).digest()
+    dig = hmac.new(
+        str(client_secret).encode("utf-8"),
+        msg=str(msg).encode("utf-8"),
+        digestmod=hashlib.sha256,
+    ).digest()
     d2 = base64.b64encode(dig).decode()
     return d2

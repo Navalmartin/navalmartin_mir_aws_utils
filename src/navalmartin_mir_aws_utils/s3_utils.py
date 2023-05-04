@@ -3,12 +3,13 @@ from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_S3
 from navalmartin_mir_aws_utils.boto3_client import get_aws_s3_client
 
 
-def get_s3_iterator(s3_client: Any, prefix: str,
-                    aws_creds: AWSCredentials_S3, delimiter="/") -> Any:
-    paginator = s3_client.get_paginator('list_objects')
-    return paginator.paginate(Bucket=aws_creds.aws_s3_bucket_name,
-                              Delimiter=delimiter,
-                              Prefix=prefix)
+def get_s3_iterator(
+    s3_client: Any, prefix: str, aws_creds: AWSCredentials_S3, delimiter="/"
+) -> Any:
+    paginator = s3_client.get_paginator("list_objects")
+    return paginator.paginate(
+        Bucket=aws_creds.aws_s3_bucket_name, Delimiter=delimiter, Prefix=prefix
+    )
 
 
 def expand_s3_iterator_contents(s3_iterator: Any) -> List[dict]:
@@ -23,7 +24,7 @@ def expand_s3_iterator_contents(s3_iterator: Any) -> List[dict]:
     A list of dictionaries
     """
 
-    contents = s3_iterator.search('Contents')
+    contents = s3_iterator.search("Contents")
     return [item for item in contents if item is not None]
 
 
@@ -38,14 +39,13 @@ def expand_s3_iterator_common_prefixes(s3_iterator: Any) -> List[dict]:
     -------
     A list of dictionaries
     """
-    contents = s3_iterator.search('CommonPrefixes')
+    contents = s3_iterator.search("CommonPrefixes")
     return [item for item in contents if item is not None]
 
 
-def delete_s3_all_objs_with_key(keys: List[dict],
-                                s3_client: Any,
-                                aws_creds: AWSCredentials_S3,
-                                **options) -> dict:
+def delete_s3_all_objs_with_key(
+    keys: List[dict], s3_client: Any, aws_creds: AWSCredentials_S3, **options
+) -> dict:
     """Delete all the objects on S3 with the given key.
 
     Parameters
@@ -72,19 +72,17 @@ def delete_s3_all_objs_with_key(keys: List[dict],
     if s3_client is None:
         s3_client = get_aws_s3_client(credentials=aws_creds)
 
-    delete_dict = {
-        'Objects': keys,
-        'Quiet': True if 'quiet' in options else False
-    }
-    response = s3_client.delete_objects(Bucket=aws_creds.aws_s3_bucket_name,
-                                        Delete=delete_dict)
+    delete_dict = {"Objects": keys, "Quiet": True if "quiet" in options else False}
+    response = s3_client.delete_objects(
+        Bucket=aws_creds.aws_s3_bucket_name, Delete=delete_dict
+    )
 
     return response
 
 
-def delete_s3_object_with_key(key: str, s3_client: Any,
-                              aws_creds: AWSCredentials_S3,
-                              **options) -> dict:
+def delete_s3_object_with_key(
+    key: str, s3_client: Any, aws_creds: AWSCredentials_S3, **options
+) -> dict:
     if key is None or key == "":
         raise ValueError("Invalid key given")
 
@@ -94,20 +92,20 @@ def delete_s3_object_with_key(key: str, s3_client: Any,
     if s3_client is None:
         s3_client = get_aws_s3_client(credentials=aws_creds)
 
-    if 'version_id' in options:
-        version_id = options['version_id']
-        response = s3_client.delete_object(Bucket=aws_creds.aws_s3_bucket_name,
-                                           Key=key, VersionId=version_id)
+    if "version_id" in options:
+        version_id = options["version_id"]
+        response = s3_client.delete_object(
+            Bucket=aws_creds.aws_s3_bucket_name, Key=key, VersionId=version_id
+        )
     else:
-        response = s3_client.delete_object(Bucket=aws_creds.aws_s3_bucket_name,
-                                           Key=key)
+        response = s3_client.delete_object(Bucket=aws_creds.aws_s3_bucket_name, Key=key)
 
     return response
 
 
-def save_object_to_s3(body: ByteString,
-                      key: str, s3_client: Any,
-                      aws_creds: AWSCredentials_S3) -> dict:
+def save_object_to_s3(
+    body: ByteString, key: str, s3_client: Any, aws_creds: AWSCredentials_S3
+) -> dict:
     """
     Save object to designated S3 bucket
     Parameters
@@ -131,7 +129,7 @@ def save_object_to_s3(body: ByteString,
         s3_client = get_aws_s3_client(credentials=aws_creds)
 
     response = s3_client.put_object(
-            Body=body, Bucket=aws_creds.aws_s3_bucket_name, Key=key
-        )
+        Body=body, Bucket=aws_creds.aws_s3_bucket_name, Key=key
+    )
 
     return response

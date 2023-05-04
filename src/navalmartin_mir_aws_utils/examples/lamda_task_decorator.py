@@ -12,14 +12,14 @@ def after_task_runner(args: dict):
     return "Finished after task runner"
 
 
-@aws_lambda_task_decorator(before_task_runner=before_task_runner,
-                           after_task_runner=after_task_runner)
+@aws_lambda_task_decorator(
+    before_task_runner=before_task_runner, after_task_runner=after_task_runner
+)
 def task(args: dict):
     print(f"Running task with arguments {args}")
     return "None"
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     result = task({})
     print(result)

@@ -1,16 +1,21 @@
 from typing import Any, Callable
 from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_CognitoIDP
 from navalmartin_mir_aws_utils.boto3_client import get_aws_cognito_idp_client
-from navalmartin_mir_aws_utils.utils import AWSCognitoSignUpUserData, AWSCognitoSignInUserData
+from navalmartin_mir_aws_utils.utils import (
+    AWSCognitoSignUpUserData,
+    AWSCognitoSignInUserData,
+)
 from navalmartin_mir_aws_utils.utils import get_secret_hash
 
 
-def global_signout_user_from_pool(access_token: str,
-                                  credentials: AWSCredentials_CognitoIDP,
-                                  cognito_client: Any = None,) -> Any:
-    """Signs out users from all devices. 
-    It also invalidates all refresh tokens that Amazon Cognito 
-    has issued to a user. A user can still use a hosted UI cookie to 
+def global_signout_user_from_pool(
+    access_token: str,
+    credentials: AWSCredentials_CognitoIDP,
+    cognito_client: Any = None,
+) -> Any:
+    """Signs out users from all devices.
+    It also invalidates all refresh tokens that Amazon Cognito
+    has issued to a user. A user can still use a hosted UI cookie to
     retrieve new tokens for the duration of the 1-hour cookie validity period.
 
     Parameters
@@ -18,7 +23,7 @@ def global_signout_user_from_pool(access_token: str,
     cognito_client: The cognito client to use
     access_token: The access token that corresponds to the signed in  user
     credentials: Credentials for accessing the Cognito IDP service
-    
+
     """
 
     if cognito_client is None:
@@ -27,11 +32,13 @@ def global_signout_user_from_pool(access_token: str,
     return cognito_client.global_sign_out(AccessToken=access_token)
 
 
-def signup_cognito_user(user_data: AWSCognitoSignUpUserData,
-                        aws_cognito_credentials: AWSCredentials_CognitoIDP,
-                        secret_hash_builder: Callable,
-                        cognito_client: Any = None,
-                        print_exception_info: bool = False) -> Any:
+def signup_cognito_user(
+    user_data: AWSCognitoSignUpUserData,
+    aws_cognito_credentials: AWSCredentials_CognitoIDP,
+    secret_hash_builder: Callable,
+    cognito_client: Any = None,
+    print_exception_info: bool = False,
+) -> Any:
     """Signup the user on the AWS Cognito
 
      Parameters
@@ -43,16 +50,17 @@ def signup_cognito_user(user_data: AWSCognitoSignUpUserData,
 
     """
     try:
-
         aws_cognito_user_client_id = aws_cognito_credentials.aws_cognito_pool_id
         aws_cognito_client_secret = aws_cognito_credentials.aws_cognito_client_secret
 
-        secret_hash = secret_hash_builder(user_data.email,
-                                          aws_cognito_user_client_id,
-                                          aws_cognito_client_secret)
+        secret_hash = secret_hash_builder(
+            user_data.email, aws_cognito_user_client_id, aws_cognito_client_secret
+        )
 
         if cognito_client is None:
-            cognito_client = get_aws_cognito_idp_client(credentials=aws_cognito_credentials)
+            cognito_client = get_aws_cognito_idp_client(
+                credentials=aws_cognito_credentials
+            )
 
         cognito_resp = cognito_client.sign_up(
             ClientId=aws_cognito_user_client_id,
@@ -70,22 +78,29 @@ def signup_cognito_user(user_data: AWSCognitoSignUpUserData,
 
         if print_exception_info:
             print(f"AWS Region name {aws_cognito_credentials.aws_region}")
-            print(f"AWS Cognito client Id {aws_cognito_credentials.aws_cognito_client_id}")
-            print(f"AWS Cognito client secret {aws_cognito_credentials.aws_cognito_client_secret}")
+            print(
+                f"AWS Cognito client Id {aws_cognito_credentials.aws_cognito_client_id}"
+            )
+            print(
+                f"AWS Cognito client secret {aws_cognito_credentials.aws_cognito_client_secret}"
+            )
             print(f"Exception message {str(e)}")
         raise e
 
 
-def authenticate_and_get_token_for_user(user_data: AWSCognitoSignInUserData,
-                                        aws_cognito_credentials: AWSCredentials_CognitoIDP,
-                                        cognito_client: Any = None) -> Any:
-
+def authenticate_and_get_token_for_user(
+    user_data: AWSCognitoSignInUserData,
+    aws_cognito_credentials: AWSCredentials_CognitoIDP,
+    cognito_client: Any = None,
+) -> Any:
     if cognito_client is None:
         cognito_client = get_aws_cognito_idp_client(credentials=aws_cognito_credentials)
 
-    secret_hash = get_secret_hash(username=user_data.username,
-                                  client_id=aws_cognito_credentials.aws_cognito_client_id,
-                                  client_secret=aws_cognito_credentials.aws_cognito_client_secret)
+    secret_hash = get_secret_hash(
+        username=user_data.username,
+        client_id=aws_cognito_credentials.aws_cognito_client_id,
+        client_secret=aws_cognito_credentials.aws_cognito_client_secret,
+    )
 
     resp = cognito_client.initiate_auth(
         ClientId=aws_cognito_credentials.aws_cognito_client_id,

@@ -19,9 +19,8 @@ def get_or_raise_environment_vars(var_names: List[str]) -> dict:
     variables = {}
 
     for name in var_names:
-
         if name in variables:
-            raise ValueError(f'Duplicate variable {name} found')
+            raise ValueError(f"Duplicate variable {name} found")
         value = os.getenv(name, default=None)
 
         if value is None:
