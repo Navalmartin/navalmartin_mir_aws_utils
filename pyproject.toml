@@ -3,7 +3,7 @@ requires = ["hatchling", "boto3", "pydantic", "pydantic[email]",]
 build-backend = "hatchling.build"
 [project]
 name = "navalmartin_mir_aws_utils"
-version = "0.0.28"
+version = "0.0.29"
 authors = [
   { name="Alexandros Giavaras", email="a.giavaras@gmail.com" },
 ]
