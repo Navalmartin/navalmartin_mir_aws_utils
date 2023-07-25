@@ -12,5 +12,6 @@ from .aws_credentials import (
     AWSCredentials_SecretsManager,
     AWSCredentials_SES,
     AWSCredentials_SFN,
+    AWSCredentials_SageMaker
 )
 from .file_s3_batch import FilePathBatch
