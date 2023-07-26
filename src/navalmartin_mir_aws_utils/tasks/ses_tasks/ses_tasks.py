@@ -50,7 +50,6 @@ def send_simple_email(
     if email.reply_to is not None:
         reply_emails = [email.reply_to]
 
-
     # format the email and send it
     response = ses_client.send_email(
         Source=email.source,
