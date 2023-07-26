@@ -4,7 +4,7 @@ from navalmartin_mir_aws_utils.boto3_client import get_aws_s3_client
 
 
 def get_s3_iterator(
-    s3_client: Any, prefix: str, aws_creds: AWSCredentials_S3, delimiter="/"
+        s3_client: Any, prefix: str, aws_creds: AWSCredentials_S3, delimiter="/"
 ) -> Any:
     paginator = s3_client.get_paginator("list_objects")
     return paginator.paginate(
@@ -44,7 +44,7 @@ def expand_s3_iterator_common_prefixes(s3_iterator: Any) -> List[dict]:
 
 
 def delete_s3_all_objs_with_key(
-    keys: List[dict], s3_client: Any, aws_creds: AWSCredentials_S3, **options
+        keys: List[dict], s3_client: Any, aws_creds: AWSCredentials_S3, **options
 ) -> dict:
     """Delete all the objects on S3 with the given key.
 
@@ -81,7 +81,7 @@ def delete_s3_all_objs_with_key(
 
 
 def delete_s3_object_with_key(
-    key: str, s3_client: Any, aws_creds: AWSCredentials_S3, **options
+        key: str, s3_client: Any, aws_creds: AWSCredentials_S3, **options
 ) -> dict:
     if key is None or key == "":
         raise ValueError("Invalid key given")
@@ -104,7 +104,7 @@ def delete_s3_object_with_key(
 
 
 def save_object_to_s3(
-    body: ByteString, key: str, s3_client: Any, aws_creds: AWSCredentials_S3
+        body: ByteString, key: str, s3_client: Any, aws_creds: AWSCredentials_S3
 ) -> dict:
     """
     Save object to designated S3 bucket
@@ -132,4 +132,38 @@ def save_object_to_s3(
         Body=body, Bucket=aws_creds.aws_s3_bucket_name, Key=key
     )
 
+    return response
+
+
+def generate_presigned_url(object_name: str,
+                           aws_creds: AWSCredentials_S3,
+                           client_method_name: str = 'get_object',
+                           expiration: int = 3600,
+                           s3_client: Any = None) -> dict:
+    """Generates a signed url for AWS S3
+
+    Parameters
+    ----------
+    client_method_name: Name of the S3.Client method, e.g., 'list_buckets'
+    expiration: Time in seconds for the presigned URL to remain valid
+    object_name: The item in AWS S3 to access
+    aws_creds: AWS credentials to sign in
+    s3_client
+
+    Returns
+    -------
+
+    A dictionary with the response
+    """
+
+    if s3_client is None:
+        if aws_creds is None:
+            raise ValueError("aws_creds and s3_client parameters cannot be simultaneously None")
+        else:
+            s3_client = get_aws_s3_client(credentials=aws_creds)
+
+    response = s3_client.generate_presigned_url(client_method_name,
+                                                Params={'Bucket': aws_creds.aws_s3_bucket_name,
+                                                        'Key': object_name},
+                                                ExpiresIn=expiration)
     return response

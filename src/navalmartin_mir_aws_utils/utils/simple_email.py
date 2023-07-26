@@ -27,9 +27,12 @@ class EmailSubject(BaseModel):
 
 
 class Email(BaseModel):
-    source: EmailStr
-    destination: EmailStr
+    source: EmailStr = Field(title="source", description="The source email")
+    destination: EmailStr = Field(title="destination", description="The destination email")
     subject: EmailSubject = Field(title="subject")
     body: EmailBody = Field(title="body")
     ccs: Optional[List[EmailStr]] = Field(title="ccs", default=[])
     reply_to: Optional[EmailStr] = Field(title="reply_to", default=None)
+    charset: Optional[str] = Field(title="charset",
+                                   description="The character set to use in the email",
+                                   default="UTF-8")

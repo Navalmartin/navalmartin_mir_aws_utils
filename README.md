@@ -3,7 +3,7 @@
 
 Various utilities for working with AWS in Python. The official
 PyPi package can be found <a href="https://pypi.org/project/navalmartin-mir-aws-utils/">here</a>.
-This package is basically wrappers on top of boto3 that allows for easier development with AWS.
+This package is basically wrappers on top of boto3 that allow for easier development with AWS.
 
 
 ## Dependencies
@@ -259,6 +259,7 @@ if __name__ == '__main__':
 SES is a simple email service that we  can use to send marketing emails such as special offers,
 transactional emails such as order confirmations, and other types of correspondence such as newsletters.
 You can find more details <a herf="https://docs.aws.amazon.com/ses/latest/dg/Welcome.html">here</a>.
+A nice tutorial about SES can be found at <a href="https://hands-on.cloud/boto3-ses-tutorial/">Boto3 SES – Complete Tutorial</a>
 
 ```
 from pydantic import EmailStr
@@ -274,7 +275,7 @@ if __name__ == '__main__':
                   destination=EmailStr("some_email@provider.com"),
                   subject=EmailSubject(data="First notification from mir"),
                   body=EmailBody(data="This your first AWS SES notification from mir. Expect more"),
-                  reply_to=EmailStr("alex@navalmartin.com"))
+                  reply_to=EmailStr("q@some-email.com"))
 
     print(email.dict())
     response = send_simple_email(email=email, credentials=credentials)

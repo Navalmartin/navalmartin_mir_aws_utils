@@ -15,7 +15,7 @@ def get_success_return(success_msg: str = "OK") -> dict:
 
 
 def get_secrets(credentials: AWSCredentials_SecretsManager) -> dict:
-    """Returns a dictionary wiht the SecretString of the specified
+    """Returns a dictionary with the SecretString of the specified
     secrets manager
     """
     client = get_aws_client_factory(credentials=credentials)
