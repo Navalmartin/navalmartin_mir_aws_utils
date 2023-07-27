@@ -9,7 +9,9 @@ class EmailBody(BaseModel):
         title="data", description="The actual email content we want to send"
     )
     charset: Optional[str] = Field(
-        title="charset", description="The character set used in the data"
+        title="charset",
+        description="The character set used in the data",
+        default="UTF-8"
     )
     html: Optional[Dict] = Field(
         title="html",
@@ -22,7 +24,9 @@ class EmailBody(BaseModel):
 class EmailSubject(BaseModel):
     data: str = Field(title="data", description="The actual subject of the email")
     charset: Optional[str] = Field(
-        title="charset", description="The character set used in the data"
+        title="charset",
+        description="The character set used in the data",
+        default="UTF-8"
     )
 
 
