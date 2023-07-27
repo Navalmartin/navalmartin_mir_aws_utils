@@ -104,7 +104,7 @@ def delete_s3_object_with_key(
 
 
 def save_object_to_s3(
-        body: ByteString, key: str, s3_client: Any, aws_creds: AWSCredentials_S3
+        body: ByteString, key: str, aws_creds: AWSCredentials_S3, s3_client: Any = None,
 ) -> dict:
     """
     Save object to designated S3 bucket
@@ -122,8 +122,8 @@ def save_object_to_s3(
     if key is None or key == "":
         raise ValueError("Invalid key given")
 
-    if aws_creds is None:
-        raise ValueError("AWS credentials not given")
+    if aws_creds is None and s3_client is None:
+        raise ValueError("aws_creds and s3_client cannot simultaneously be None")
 
     if s3_client is None:
         s3_client = get_aws_s3_client(credentials=aws_creds)

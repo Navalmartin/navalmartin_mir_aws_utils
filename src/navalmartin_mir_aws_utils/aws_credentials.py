@@ -33,6 +33,14 @@ class AWSCredentials_S3(AWSCredentials):
         self.aws_s3_bucket_name = aws_s3_bucket_name
         self.aws_region = aws_region
 
+    def __str__(self) -> str:
+        result = f"aws_client_name={self.aws_client_name}\n"
+        result += f"aws_access_key={self.aws_access_key}\n"
+        result += f"aws_secret_access_key={self.aws_secret_access_key}\n"
+        result += f"aws_region={self.aws_region}\n"
+        result += f"aws_s3_bucket_name={self.aws_s3_bucket_name}"
+        return result
+
 
 class AWSCredentials_SQS(AWSCredentials):
     def __init__(
@@ -51,6 +59,15 @@ class AWSCredentials_SQS(AWSCredentials):
         self.aws_sqs_queue_name: str = aws_sqs_queue_name
         self.aws_region: str = aws_region
         self.queue_url: str = aws_queue_url
+
+    def __str__(self) -> str:
+        result = f"aws_client_name={self.aws_client_name}\n"
+        result += f"aws_access_key={self.aws_access_key}\n"
+        result += f"aws_secret_access_key={self.aws_secret_access_key}\n"
+        result += f"aws_region={self.aws_region}\n"
+        result += f"queue_url={self.queue_url}\n"
+        result += f"aws_sqs_queue_name={self.aws_sqs_queue_name}"
+        return result
 
 
 class AWSCredentials_CognitoIDP(AWSCredentials):
@@ -73,6 +90,16 @@ class AWSCredentials_CognitoIDP(AWSCredentials):
         self.aws_cognito_client_id = aws_cognito_client_id
         self.aws_cognito_client_secret = aws_cognito_client_secret
 
+    def __str__(self) -> str:
+        result = f"aws_client_name={self.aws_client_name}\n"
+        result += f"aws_access_key={self.aws_access_key}\n"
+        result += f"aws_secret_access_key={self.aws_secret_access_key}\n"
+        result += f"aws_region={self.aws_region}\n"
+        result += f"aws_cognito_pool_id={self.aws_cognito_pool_id}\n"
+        result += f"aws_cognito_client_id={self.aws_cognito_client_id}\n"
+        result += f"aws_cognito_client_secret={self.aws_cognito_client_secret}"
+        return result
+
 
 class AWSCredentials_SecretsManager(AWSCredentials):
     def __init__(
@@ -90,6 +117,14 @@ class AWSCredentials_SecretsManager(AWSCredentials):
         self.aws_region = aws_region
         self.secret_name = secret_name
 
+    def __str__(self) -> str:
+        result = f"aws_client_name={self.aws_client_name}\n"
+        result += f"aws_access_key={self.aws_access_key}\n"
+        result += f"aws_secret_access_key={self.aws_secret_access_key}\n"
+        result += f"aws_region={self.aws_region}\n"
+        result += f"secret_name={self.secret_name}"
+        return result
+
 
 class AWSCredentials_SES(AWSCredentials):
     def __init__(
@@ -104,6 +139,13 @@ class AWSCredentials_SES(AWSCredentials):
             aws_secret_access_key=aws_secret_access_key,
         )
         self.aws_region = aws_region
+
+    def __str__(self) -> str:
+        result = f"aws_client_name={self.aws_client_name}\n"
+        result += f"aws_access_key={self.aws_access_key}\n"
+        result += f"aws_secret_access_key={self.aws_secret_access_key}\n"
+        result += f"aws_region={self.aws_region}"
+        return result
 
 
 class AWSCredentials_SFN(AWSCredentials):
@@ -132,3 +174,10 @@ class AWSCredentials_SageMaker(AWSCredentials):
                                                        aws_access_key=aws_access_key,
                                                        aws_secret_access_key=aws_secret_access_key)
         self.aws_region = aws_region
+
+    def __str__(self) -> str:
+        result = f"aws_client_name={self.aws_client_name}\n"
+        result += f"aws_access_key={self.aws_access_key}\n"
+        result += f"aws_secret_access_key={self.aws_secret_access_key}\n"
+        result += f"aws_region={self.aws_region}"
+        return result

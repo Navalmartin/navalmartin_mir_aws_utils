@@ -12,6 +12,7 @@ if __name__ == "__main__":
         credentials = AWSCredentials_SecretsManager(
             aws_region=AWS_REGION, secret_name=AWS_SECRET_NAME
         )
+        print(credentials)
         client = get_aws_client_factory(credentials=credentials)
 
         get_secret_value_response = client.get_secret_value(

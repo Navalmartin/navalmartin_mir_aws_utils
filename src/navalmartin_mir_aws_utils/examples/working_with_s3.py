@@ -16,6 +16,7 @@ if __name__ == "__main__":
         aws_region=AWS_REGION
     )
 
+    print(aws_s3_credentials)
     print("---------Deleting one object")
 
     # delete an object from S3
