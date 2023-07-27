@@ -6,18 +6,16 @@ from pydantic import EmailStr, BaseModel, Field
 
 class EmailBody(BaseModel):
     data: str = Field(
-        title="data", description="The actual email content we want to send"
+        title="data",
+        description="The actual email content we want to send. "
+                    "The content of the message, can also be in HTML format. Use this for email "
+                    "clients that can process HTML. You can include clickable links, "
+                    "formatted text, and much more in an HTML message.",
     )
     charset: Optional[str] = Field(
         title="charset",
         description="The character set used in the data",
         default="UTF-8"
-    )
-    html: Optional[Dict] = Field(
-        title="html",
-        description="The content of the message, in HTML format. Use this for email "
-        "clients that can process HTML. You can include clickable links, "
-        "formatted text, and much more in an HTML message.",
     )
 
 
