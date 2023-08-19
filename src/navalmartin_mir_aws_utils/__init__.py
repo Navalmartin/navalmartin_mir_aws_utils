@@ -3,7 +3,7 @@ Various utilities for working with AWS in Python. The official
 PyPi package can be found <a href="https://pypi.org/project/navalmartin-mir-aws-utils/">here</a>.
 This package is basically wrappers on top of boto3 that allows for easier development with AWS.
 """
-__version__ = "0.0.34"
+__version__ = "0.0.35"
 from .boto3_client import get_aws_client_factory
 from .aws_credentials import (
     AWSCredentials_S3,
@@ -21,7 +21,8 @@ from .s3_utils import (get_s3_iterator,
                        delete_s3_all_objs_with_key,
                        delete_s3_object_with_key,
                        save_object_to_s3,
-                       generate_presigned_url)
+                       generate_presigned_url,
+                       read_object_from_s3)
 
 from .utils.simple_email import (Email,
                                  EmailBody,

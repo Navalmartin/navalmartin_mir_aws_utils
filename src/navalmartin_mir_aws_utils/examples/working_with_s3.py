@@ -2,11 +2,14 @@ from navalmartin_mir_aws_utils.aws_credentials import AWSCredentials_S3
 from navalmartin_mir_aws_utils import (
     delete_s3_all_objs_with_key,
     delete_s3_object_with_key,
-    generate_presigned_url
+    generate_presigned_url,
+    read_object_from_s3
 )
 
-AWS_REGION = "YOUR-AWS-REGION"
-AWS_S3_BUCKET_NAME = "YOUR-AWS-BUCKET-NAME"
+
+
+AWS_REGION = "YOUR-REGION"
+AWS_S3_BUCKET_NAME = "YOUR-BUCKET-NAME"
 
 if __name__ == "__main__":
 
@@ -42,3 +45,12 @@ if __name__ == "__main__":
                                       client_method_name='get_object',
                                       expiration=4600)
     print(response)
+
+
+    print("---------Reading object from S3")
+    object = read_object_from_s3(key="your-key",
+                                 aws_creds=aws_s3_credentials)
+
+
+
+

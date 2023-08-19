@@ -103,6 +103,40 @@ def delete_s3_object_with_key(
     return response
 
 
+def read_object_from_s3(key: str,
+                        aws_creds: AWSCredentials_S3, s3_client: Any = None) -> str:
+    """Reads the object specified by the key
+
+    Parameters
+    ----------
+    key: The key of the object
+    aws_creds: The credentials to use in order to connect to S3
+    s3_client: The AWS S3 client. If none it is created using the provided credentials
+
+    Returns
+    -------
+
+    """
+
+    if key is None or key == "":
+        raise ValueError("Invalid key given")
+
+    if aws_creds is None and s3_client is None:
+        raise ValueError("aws_creds and s3_client cannot simultaneously be None")
+
+    if s3_client is None:
+        s3_client = get_aws_s3_client(credentials=aws_creds)
+
+
+    file_byte_string = s3_client.get_object(
+        Bucket=aws_creds.aws_s3_bucket_name, Key=key
+    )
+
+    if "Body" not in file_byte_string:
+        raise ValueError("Body is missing from file object response")
+
+    return file_byte_string["Body"].read()
+
 def save_object_to_s3(
         body: ByteString, key: str, aws_creds: AWSCredentials_S3, s3_client: Any = None,
 ) -> dict:
